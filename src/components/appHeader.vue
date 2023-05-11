@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapStores, mapWritableState } from 'pinia'
+import { mapState, mapStores, mapWritableState } from 'pinia'
 import useModalStore from '../stores/modal'
 export default {
   name: 'appHeader',
@@ -33,11 +33,13 @@ export default {
   },
   computed: {
     ...mapStores(useModalStore),
-    ...mapWritableState(useModalStore, ['isOpen'])
+    ...mapWritableState(useModalStore, ['isOpen']),
+    ...mapState(useModalStore, { bruh: 'isOpen' })
   },
   methods: {
     toggle() {
       this.modalStore.isOpen = !this.modalStore.isOpen
+      // console.log(this.bruh)
       // this.isOpen = !this.isOpen
     }
   }

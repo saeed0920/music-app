@@ -5,7 +5,7 @@
   <section class="mb-8 py-20 text-white text-center relative">
     <div
       class="absolute inset-0 w-full h-full bg-contain introduction-bg"
-      style="background-image: url(assets/img/header.png)"
+      style="background-image: url(../assets/img/header.png)"
     ></div>
     <div class="container mx-auto">
       <div class="text-white main-header-content">
@@ -264,17 +264,26 @@
       <div class="player-duration">03:06</div>
     </div>
   </div>
-
-  <appAuth></appAuth>
+  <transition
+    enter-active-class="animate__animated animate__fadeIn"
+    leave-active-class="animate__animated animate__fadeOut"
+  >
+    <appAuth v-if="isOpen"></appAuth>
+  </transition>
 </template>
 <script>
 import appHeader from './components/appHeader.vue'
 import appAuth from './components/appAuth.vue'
+import { mapState } from 'pinia'
+import useModelStore from '@/stores/modal'
 export default {
   name: 'app',
   components: {
     appHeader,
     appAuth
+  },
+  computed: {
+    ...mapState(useModelStore, ['isOpen'])
   }
 }
 </script>
