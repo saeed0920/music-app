@@ -79,7 +79,7 @@
             </button>
           </form>
           <!-- Registration Form -->
-          <vee-Form v-else :validation-schema="schema">
+          <vee-Form v-else :validation-schema="rules">
             <!-- Name -->
             <div class="mb-3">
               <label class="inline-block mb-2">Name</label>
@@ -89,41 +89,51 @@
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                 placeholder="Enter Name"
               />
+              <ErrorMessage class="text-red-500" name="name" />
             </div>
             <!-- Email -->
             <div class="mb-3">
               <label class="inline-block mb-2">Email</label>
-              <input
+              <veeField
+                name="email"
                 type="email"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                 placeholder="Enter Email"
               />
+              <ErrorMessage class="text-red-500" name="email" />
             </div>
             <!-- Age -->
             <div class="mb-3">
               <label class="inline-block mb-2">Age</label>
-              <input
-                type="number"
+              <veeField
+                name="age"
+                type="type"
+                placeholder="Enter Age"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
               />
+              <ErrorMessage name="age" class="text-red-500" />
             </div>
             <!-- Password -->
             <div class="mb-3">
               <label class="inline-block mb-2">Password</label>
-              <input
+              <veeField
+                name="password"
                 type="password"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                 placeholder="Password"
               />
+              <ErrorMessage name="password" class="text-red-700" />
             </div>
             <!-- Confirm Password -->
             <div class="mb-3">
               <label class="inline-block mb-2">Confirm Password</label>
-              <input
+              <veeField
+                name="confirm_password"
                 type="password"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                 placeholder="Confirm Password"
               />
+              <ErrorMessage name="confirm_password" class="text-red-500" />
             </div>
             <!-- Country -->
             <div class="mb-3">
@@ -157,19 +167,38 @@
 <script>
 import { mapStores, mapState } from 'pinia'
 import useModalStore from '../stores/modal'
+import { ErrorMessage } from 'vee-validate'
 export default {
   name: 'appAuth',
   data() {
     return {
       defaultForm: true,
-      schema: {
-        name: 'requiredValue',
-        schema: {
-          name: 'requiredValue',
-          email: '',
-          age: '',
-          password: ''
-        }
+      rules: {
+        name: {
+          requiredValue: true,
+          min: 2,
+          max: 100,
+          alphaSpaces: true
+        },
+        email: 'requiredValue|email|max:100',
+        age: {
+          requiredValue: true,
+          numeric: true,
+          alphaNum: true,
+          minValue: 16,
+          maxValue: 30
+        },
+        password: {
+          requiredValue: true,
+          min: 6,
+          max: 100
+        },
+        confirm_password: {
+          confirmed: '@password',
+          requiredValue: true
+        },
+        country: '',
+        tos: ''
       }
     }
   },
@@ -189,7 +218,8 @@ export default {
     this.$nextTick(() => {
       document.addEventListener('keydown', this.closeE)
     })
-  }
+  },
+  components: { ErrorMessage }
 }
 </script>
 <style scoped lang="scss"></style>
