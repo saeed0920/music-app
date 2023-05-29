@@ -79,7 +79,7 @@
             </button>
           </form>
           <!-- Registration Form -->
-          <vee-Form v-else :validation-schema="rules">
+          <vee-Form v-else :validation-schema="rules" @submit="register" :initial-values="userData">
             <!-- Name -->
             <div class="mb-3">
               <label class="inline-block mb-2">Name</label>
@@ -116,12 +116,18 @@
             <!-- Password -->
             <div class="mb-3">
               <label class="inline-block mb-2">Password</label>
-              <veeField
-                name="password"
-                type="password"
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                placeholder="Password"
-              />
+              <veeField name="password" :bails="false" v-slot="pass">
+                <input
+                  type="password"
+                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+                  placeholder="Password"
+                  v-bind="pass.field"
+                />
+                <p class="text-red-700" v-for="items of pass.errors" :key="items">
+                  {{ items }}
+                </p>
+              </veeField>
+
               <ErrorMessage name="password" class="text-red-700" />
             </div>
             <!-- Confirm Password -->
@@ -138,18 +144,28 @@
             <!-- Country -->
             <div class="mb-3">
               <label class="inline-block mb-2">Country</label>
-              <select
+              <veeField
+                as="select"
+                name="country"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
               >
-                <option value="USA">USA</option>
+                <option value="USA" default>USA</option>
                 <option value="Mexico">Mexico</option>
                 <option value="Germany">Germany</option>
-              </select>
+                <option value="Iran">Iran</option>
+              </veeField>
+              <ErrorMessage name="country" class="text-red-500" />
             </div>
             <!-- TOS -->
-            <div class="mb-3 pl-6">
-              <input type="checkbox" class="w-4 h-4 float-left -ml-6 mt-1 rounded" />
-              <label class="inline-block">Accept terms of service</label>
+            <div class="mb-3 pl-6 grid justify-items-start">
+              <veeField
+                type="checkbox"
+                name="tos"
+                value="1"
+                class="w-4 h-4 float-left -ml-6 mt-1 row-start-1 col-start-1"
+              />
+              <label class="inline-block row-start-1 col-start-1">Accept terms of service</label>
+              <ErrorMessage name="tos" class="text-red-600 row-start-2 col-start-1" />
             </div>
             <button
               type="submit"
@@ -190,15 +206,22 @@ export default {
         },
         password: {
           requiredValue: true,
-          min: 6,
-          max: 100
+          min: 8,
+          max: 100,
+          nof: ['password', 12345678, 11111111, 'Password']
         },
         confirm_password: {
           confirmed: '@password',
           requiredValue: true
         },
-        country: '',
-        tos: ''
+        country: {
+          requiredValue: true,
+          'nof-country': 'Iran'
+        },
+        tos: 'tosreq'
+      },
+      userData: {
+        country: 'Iran'
       }
     }
   },
@@ -212,6 +235,9 @@ export default {
     },
     closeE(event) {
       if (event.key === 'Escape') this.modalStore.isOpen = false
+    },
+    register(value) {
+      console.log(value)
     }
   },
   mounted() {

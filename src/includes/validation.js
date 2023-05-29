@@ -1,4 +1,10 @@
-import { Form as veeForm, Field as veeField, defineRule, ErrorMessage } from 'vee-validate'
+import {
+  Form as veeForm,
+  Field as veeField,
+  defineRule,
+  ErrorMessage,
+  configure
+} from 'vee-validate'
 import {
   required,
   min,
@@ -9,7 +15,8 @@ import {
   alpha_num,
   min_value,
   max_value,
-  confirmed
+  confirmed,
+  not_one_of as nof
 } from '@vee-validate/rules'
 export default {
   install(app) {
@@ -29,5 +36,25 @@ export default {
     defineRule('email', email)
     defineRule('numeric', numeric)
     defineRule('alphaNum', alpha_num)
+    defineRule('nof', nof)
+    // custom specifict rules
+    defineRule('nof-country', nof)
+    defineRule('tosreq', required)
+
+    configure({
+      generateMessage: (ctx) => {
+        const messages = {
+          requiredValue: `come on field this ${ctx.field}!`,
+          nof: `You are not aloowed to you this shit value ${ctx.value}`,
+          'nof-country': `Iran?!! 😂`,
+          confirmed: "Password dosen't match idiot!",
+          tosreq: `Check it b****`
+        }
+        const message = messages[ctx.rule.name]
+          ? messages[ctx.rule.name]
+          : `The field ${ctx.field} is invalid.`
+        return message
+      }
+    })
   }
 }
