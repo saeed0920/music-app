@@ -208,6 +208,8 @@
 import { mapStores, mapState } from 'pinia'
 import useModalStore from '../stores/modal'
 import { ErrorMessage } from 'vee-validate'
+import firebase from '@/includes/firebase'
+
 export default {
   name: 'appAuth',
   data() {
@@ -293,13 +295,18 @@ export default {
     closeE(event) {
       if (event.key === 'Escape') this.modalStore.isOpen = false
     },
-    register(value) {
+    async register(value) {
       console.log('test')
       // prc
       this.reg.bgAlert = this.reg.bgBlue
       this.reg.showAlert = true
       this.reg.disableBtnSub = true
       this.reg.textalert = this.reg.textAlertProcess
+
+      // firebase
+      const userCard = await firebase
+        .auth()
+        .createUserWithEmailAndPassword(value.email, value.password)
 
       // succsess
       this.reg.bgAlert = this.reg.bgGreen
