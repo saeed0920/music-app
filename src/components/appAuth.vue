@@ -51,34 +51,54 @@
             </li>
           </ul>
 
+          <div
+            v-if="reg.showAlert"
+            class="alert-pop-reg rounded-md text-2xl text-white font-bold text-center px-4 py-3"
+            :class="reg.bgAlert"
+          >
+            {{ reg.textalert }}
+          </div>
+          <div
+            v-if="log.showAlert"
+            class="alert-pop-login rounded-md text-2xl text-white font-bold text-center px-4 py-3"
+            :class="log.bgAlert"
+          >
+            {{ log.textalert }}
+          </div>
           <!-- Login Form -->
-          <form v-if="defaultForm">
+          <vee-Form v-if="defaultForm" @submit="login" :validation-schema="loginRules">
             <!-- Email -->
             <div class="mb-3">
               <label class="inline-block mb-2">Email</label>
-              <input
+              <veeField
+                name="email"
                 type="email"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                 placeholder="Enter Email"
               />
+              <ErrorMessage class="text-red-500" name="email" />
             </div>
             <!-- Password -->
             <div class="mb-3">
               <label class="inline-block mb-2">Password</label>
-              <input
+              <veeField
+                name="password"
                 type="password"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                 placeholder="Password"
               />
+              <ErrorMessage class="text-red-600" name="password" />
             </div>
             <button
               type="submit"
               class="block w-full bg-purple-600 text-white py-1.5 px-3 rounded transition hover:bg-purple-700"
+              :disabled="log.disableBtnSub"
             >
               Submit
             </button>
-          </form>
+          </vee-Form>
           <!-- Registration Form -->
+
           <vee-Form v-else :validation-schema="rules" @submit="register" :initial-values="userData">
             <!-- Name -->
             <div class="mb-3">
@@ -163,13 +183,17 @@
                 name="tos"
                 value="1"
                 class="w-4 h-4 float-left -ml-6 mt-1 row-start-1 col-start-1"
+                id="check"
               />
-              <label class="inline-block row-start-1 col-start-1">Accept terms of service</label>
+              <label for="check" class="inline-block row-start-1 col-start-1"
+                >Accept terms of service</label
+              >
               <ErrorMessage name="tos" class="text-red-600 row-start-2 col-start-1" />
             </div>
             <button
               type="submit"
               class="block w-full bg-purple-600 text-white py-1.5 px-3 rounded transition hover:bg-purple-700"
+              :disabled="reg.disableBtnSub"
             >
               Submit
             </button>
@@ -222,6 +246,39 @@ export default {
       },
       userData: {
         country: 'Iran'
+      },
+      loginRules: {
+        password: {
+          requiredValue: true,
+          min: 8,
+          max: 100
+        },
+        email: {
+          requiredValue: true,
+          email: true,
+          max: 100
+        }
+      },
+
+      reg: {
+        showAlert: false,
+        disableBtnSub: false,
+        bgGreen: 'bg-green-500',
+        bgBlue: 'bg-blue-500',
+        textAlertProcess: 'Pls wait!',
+        textAlertSucess: 'Succsess! GG.',
+        textalert: ' ',
+        bgAlert: ''
+      },
+      log: {
+        showAlert: false,
+        disableBtnSub: false,
+        bgGreen: 'bg-green-500',
+        bgBlue: 'bg-blue-500',
+        textAlertProcess: 'Pls wait! we are logging you in.',
+        textAlertSucess: 'Now you are in!',
+        textalert: ' ',
+        bgAlert: ''
       }
     }
   },
@@ -237,6 +294,33 @@ export default {
       if (event.key === 'Escape') this.modalStore.isOpen = false
     },
     register(value) {
+      console.log('test')
+      // prc
+      this.reg.bgAlert = this.reg.bgBlue
+      this.reg.showAlert = true
+      this.reg.disableBtnSub = true
+      this.reg.textalert = this.reg.textAlertProcess
+
+      // succsess
+      this.reg.bgAlert = this.reg.bgGreen
+      this.reg.textalert = this.reg.textAlertSucess
+
+      // show result in console
+      console.log(value)
+    },
+    login(value) {
+      console.log('test')
+      // prc
+      this.log.bgAlert = this.log.bgBlue
+      this.log.showAlert = true
+      this.log.disableBtnSub = true
+      this.log.textalert = this.log.textAlertProcess
+
+      // succsess
+      this.log.bgAlert = this.log.bgGreen
+      this.log.textalert = this.log.textAlertSucess
+
+      // show result in console
       console.log(value)
     }
   },
