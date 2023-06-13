@@ -1,6 +1,6 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
-
+import 'firebase/firestore'
 const firebaseConfig = {
   apiKey: 'AIzaSyBKEOByRWQyjwViTsuz1AJp-qNgl87MA2c',
   authDomain: 'music-app-4545e.firebaseapp.com',
@@ -10,4 +10,10 @@ const firebaseConfig = {
   appId: '1:79751405633:web:01b805bfb06ef291c066c0'
 }
 
-export default firebase.initializeApp(firebaseConfig)
+firebase.initializeApp(firebaseConfig)
+
+const auth = firebase.auth()
+const dataBase = firebase.firestore()
+const userCol = dataBase.collection('usersInfo')
+
+export { auth, dataBase, userCol }

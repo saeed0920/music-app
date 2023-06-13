@@ -208,7 +208,7 @@
 import { mapStores, mapState } from 'pinia'
 import useModalStore from '../stores/modal'
 import { ErrorMessage } from 'vee-validate'
-import firebase from '@/includes/firebase'
+import { auth, userCol } from '@/includes/firebase'
 
 export default {
   name: 'appAuth',
@@ -267,6 +267,7 @@ export default {
         disableBtnSub: false,
         bgGreen: 'bg-green-500',
         bgBlue: 'bg-blue-500',
+        bgRed: 'bg-red-500',
         textAlertProcess: 'Pls wait!',
         textAlertSucess: 'Succsess! GG.',
         textalert: ' ',
@@ -296,7 +297,6 @@ export default {
       if (event.key === 'Escape') this.modalStore.isOpen = false
     },
     async register(value) {
-      console.log('test')
       // prc
       this.reg.bgAlert = this.reg.bgBlue
       this.reg.showAlert = true
@@ -304,16 +304,35 @@ export default {
       this.reg.textalert = this.reg.textAlertProcess
 
       // firebase
-      const userCard = await firebase
-        .auth()
-        .createUserWithEmailAndPassword(value.email, value.password)
+      let userCard = null
+      try {
+        userCard = await auth.createUserWithEmailAndPassword(value.email, value.password)
+      } catch (error) {
+        this.reg.bgAlert = this.reg.bgRed
+        this.reg.textalert = 'Bruh😑'
+        return
+      }
+      // add collection in database in firestore
+      try {
+        await userCol.add({
+          name: value.name,
+          email: value.email,
+          password: value.password,
+          age: value.age,
+          country: value.country
+        })
+      } catch (error) {
+        this.reg.bgAlert = 'bg-yellow-500'
+        this.reg.textalert = '😶'
+        return
+      }
 
       // succsess
       this.reg.bgAlert = this.reg.bgGreen
       this.reg.textalert = this.reg.textAlertSucess
 
       // show result in console
-      console.log(value)
+      console.log(userCard)
     },
     login(value) {
       console.log('test')
