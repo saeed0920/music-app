@@ -143,12 +143,10 @@
                   placeholder="Password"
                   v-bind="pass.field"
                 />
-                <p class="text-red-700" v-for="items of pass.errors" :key="items">
+                <p class="text-red-500" v-for="items of pass.errors" :key="items">
                   {{ items }}
                 </p>
               </veeField>
-
-              <ErrorMessage name="password" class="text-red-700" />
             </div>
             <!-- Confirm Password -->
             <div class="mb-3">
@@ -175,6 +173,18 @@
                 <option value="Iran">Iran</option>
               </veeField>
               <ErrorMessage name="country" class="text-red-500" />
+            </div>
+            <!-- Id telegram -->
+            <div class="mb-3">
+              <label for="telegram" class="inline-block mb-2">Telegram ID</label>
+              <veeField
+                id="telegram"
+                name="telegram"
+                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+                placeholder="Enter ID like this: @test"
+                v-model="id"
+              />
+              <ErrorMessage name="telegram" class="text-red-500" />
             </div>
             <!-- TOS -->
             <div class="mb-3 pl-6 grid justify-items-start">
@@ -214,6 +224,7 @@ export default {
   name: 'appAuth',
   data() {
     return {
+      id: '',
       defaultForm: true,
       rules: {
         name: {
@@ -244,7 +255,12 @@ export default {
           requiredValue: true,
           'nof-country': 'Iran'
         },
-        tos: 'tosreq'
+        tos: 'tosreq',
+        telegram: {
+          requiredValueID: true,
+          min: 5,
+          max: 32
+        }
       },
       userData: {
         country: 'Iran'
@@ -319,7 +335,8 @@ export default {
           email: value.email,
           password: value.password,
           age: value.age,
-          country: value.country
+          country: value.country,
+          TelegramID: value.telegram
         })
       } catch (error) {
         this.reg.bgAlert = 'bg-yellow-500'
@@ -332,7 +349,7 @@ export default {
       this.reg.textalert = this.reg.textAlertSucess
 
       // show result in console
-      console.log(userCard)
+      // console.log(userCard)
     },
     login(value) {
       console.log('test')
@@ -348,6 +365,18 @@ export default {
 
       // show result in console
       console.log(value)
+    }
+  },
+
+  watch: {
+    id(newId, oldId) {
+      this.id = newId.trim()
+      this.id = this.id.replace(/\s/g, '')
+      if (newId.indexOf('@') == -1) {
+        const array = [...this.id]
+        array.unshift('@')
+        this.id = array.join('')
+      }
     }
   },
   mounted() {

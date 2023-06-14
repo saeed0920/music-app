@@ -30,6 +30,7 @@ export default {
     defineRule('minValue', min_value)
     defineRule('maxValue', max_value)
     defineRule('requiredValue', required)
+    defineRule('requiredValueID', required)
     defineRule('min', min)
     defineRule('alphaSpaces', alpha_spaces)
     defineRule('max', max)
@@ -44,11 +45,12 @@ export default {
     configure({
       generateMessage: (ctx) => {
         const messages = {
-          requiredValue: `come on field this ${ctx.field}!`,
+          requiredValue: `Come on field this ${ctx.field}!`,
           nof: `You are not aloowed to you this shit value ${ctx.value}`,
           'nof-country': `Iran?!! 😂`,
           confirmed: "Password dosen't match idiot!",
-          tosreq: `Check it b****`
+          tosreq: `Check it b****`,
+          requiredValueID: 'Pls input your Telegram ID'
         }
         const message = messages[ctx.rule.name]
           ? messages[ctx.rule.name]
