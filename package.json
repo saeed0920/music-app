@@ -16,6 +16,7 @@
     "@vee-validate/rules": "^4.9.3",
     "firebase": "^8.10.1",
     "pinia": "^2.0.35",
+    "unsplash-js": "^7.0.18",
     "vee-validate": "^4.9.3",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6"

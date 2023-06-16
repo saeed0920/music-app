@@ -276,6 +276,11 @@ import appHeader from './components/appHeader.vue'
 import appAuth from './components/appAuth.vue'
 import { mapState } from 'pinia'
 import useModelStore from '@/stores/modal'
+import { auth } from './includes/firebase'
+
+import { mapWritableState } from 'pinia'
+import useUserStore from '@/stores/user.js'
+
 export default {
   name: 'app',
   components: {
@@ -283,7 +288,13 @@ export default {
     appAuth
   },
   computed: {
-    ...mapState(useModelStore, ['isOpen'])
+    ...mapState(useModelStore, ['isOpen']),
+    ...mapWritableState(useUserStore, ['userLogIn'])
+  },
+  created() {
+    if (auth.currentUser) {
+      this.userLogIn = true
+    }
   }
 }
 </script>

@@ -53,14 +53,14 @@
 
           <div
             v-if="reg.showAlert"
-            class="alert-pop-reg rounded-md text-2xl text-white font-bold text-center px-4 py-3"
+            class="alert-pop-reg rounded-md text-[1.4rem] text-white font-bold text-center px-4 py-3"
             :class="reg.bgAlert"
           >
             {{ reg.textalert }}
           </div>
           <div
             v-if="log.showAlert"
-            class="alert-pop-login rounded-md text-2xl text-white font-bold text-center px-4 py-3"
+            class="alert-pop-login rounded-md text-[1.4rem] text-white font-bold text-center px-4 py-3"
             :class="log.bgAlert"
           >
             {{ log.textalert }}
@@ -216,9 +216,10 @@
 
 <script>
 import { mapStores, mapState } from 'pinia'
+import { mapActions } from 'pinia'
 import useModalStore from '../stores/modal'
 import { ErrorMessage } from 'vee-validate'
-import { auth, userCol } from '@/includes/firebase'
+import useUserStore from '@/stores/user'
 
 export default {
   name: 'appAuth',
@@ -285,7 +286,7 @@ export default {
         bgBlue: 'bg-blue-500',
         bgRed: 'bg-red-500',
         textAlertProcess: 'Pls wait!',
-        textAlertSucess: 'Succsess! GG.',
+        textAlertSucess: 'Successful! Welcome to our community!',
         textalert: ' ',
         bgAlert: ''
       },
@@ -306,6 +307,10 @@ export default {
     ...mapState(useModalStore, ['isOpen'])
   },
   methods: {
+    ...mapActions(useUserStore, {
+      createUser: 'register'
+    }),
+    ...mapActions(useUserStore, ['authLogin']),
     close() {
       this.modalStore.isOpen = false
     },
@@ -319,28 +324,22 @@ export default {
       this.reg.disableBtnSub = true
       this.reg.textalert = this.reg.textAlertProcess
 
-      // firebase
-      let userCard = null
+      // request for get random img
+      const url =
+        'https://api.unsplash.com/photos/random/?query=animals&count=1&client_id=Nba-gLiI__Rzp1dyk5iStSsGLAsH_6yERnNYM-gzC5o'
       try {
-        userCard = await auth.createUserWithEmailAndPassword(value.email, value.password)
+        const response = await fetch(url)
+        const data = await response.json()
+        const img = data[0].urls.regular // return the URL of the random animal picture
+        value.img = img
+      } catch (error) {}
+
+      // create user in firebase
+      try {
+        await this.createUser(value)
       } catch (error) {
         this.reg.bgAlert = this.reg.bgRed
-        this.reg.textalert = 'Bruh😑'
-        return
-      }
-      // add collection in database in firestore
-      try {
-        await userCol.add({
-          name: value.name,
-          email: value.email,
-          password: value.password,
-          age: value.age,
-          country: value.country,
-          TelegramID: value.telegram
-        })
-      } catch (error) {
-        this.reg.bgAlert = 'bg-yellow-500'
-        this.reg.textalert = '😶'
+        this.reg.textalert = 'Your Internet connection Is fucked!😶'
         return
       }
 
@@ -348,23 +347,32 @@ export default {
       this.reg.bgAlert = this.reg.bgGreen
       this.reg.textalert = this.reg.textAlertSucess
 
-      // show result in console
-      // console.log(userCard)
+      // reload the page
+      window.location.reload()
     },
-    login(value) {
-      console.log('test')
+    async login(value) {
       // prc
       this.log.bgAlert = this.log.bgBlue
       this.log.showAlert = true
       this.log.disableBtnSub = true
       this.log.textalert = this.log.textAlertProcess
 
+      try {
+        await this.authLogin(value)
+      } catch (error) {
+        this.log.bgAlert = 'bg-red-500'
+        this.log.textalert = 'Oops! Invalid login.'
+        this.log.disableBtnSub = false
+        return
+      }
+
       // succsess
       this.log.bgAlert = this.log.bgGreen
       this.log.textalert = this.log.textAlertSucess
+      console.log('User now In!')
 
-      // show result in console
-      console.log(value)
+      // reload the page
+      window.location.reload()
     }
   },
 
