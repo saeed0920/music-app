@@ -55,3 +55,7 @@ npm run test:e2e
 ```sh
 npm run lint
 ```
+
+### TODO
+
+--- [ ] Fix Name of Component to FirstCamelCase!
