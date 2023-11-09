@@ -4,7 +4,7 @@ a {
 
 /* text-yellow-500 */
 a:hover {
-  color: #f59e0b;
+  @apply text-rose-500;
   text-decoration: none;
 }
 
@@ -36,7 +36,7 @@ a:hover {
   border-style: solid;
 }
 
-input[type="file"] {
+input[type='file'] {
   margin-top: 20px;
 }
 
