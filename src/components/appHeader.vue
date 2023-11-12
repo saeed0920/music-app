@@ -4,10 +4,10 @@
     <nav class="container mx-auto flex justify-start items-center py-5 px-4">
       <!-- App Name -->
       <router-link
-        to="/"
-        exact-active-class="text-purple-500"
-        class="text-white font-bold uppercase text-2xl mr-4"
-        href="#"
+        exact-active-class="!text-purple-500"
+        :to="{ name: 'home' }"
+        class="font-bold uppercase text-2xl mr-4"
+        :class="{ 'text-white': !exactActiveClass }"
         >Music</router-link
       >
 
@@ -16,14 +16,14 @@
         <ul class="flex flex-row mt-1">
           <!-- Navigation Links -->
           <li>
-            <router-link to="/about" class="px-2 text-white">About</router-link>
+            <router-link :to="{ name: 'about' }" class="px-2 text-white">About</router-link>
           </li>
           <li v-if="!userLogIn">
             <a class="px-2 text-white" href="#" @click.prevent="toggle">Login / Register</a>
           </li>
           <template v-else>
             <li>
-              <RouterLink to="/manage" class="px-2 text-white">Manage</RouterLink>
+              <RouterLink :to="{ name: 'manage' }" class="px-2 text-white">Manage</RouterLink>
             </li>
             <li>
               <a class="px-2 text-white" href="#" @click.prevent="logOut">Logout</a>
@@ -55,7 +55,6 @@ export default {
     ...mapActions(useUserStore, ['logOut']),
     toggle() {
       this.modalStore.isOpen = !this.modalStore.isOpen
-      // console.log(this.bruh)
       // this.isOpen = !this.isOpen
     }
   }
