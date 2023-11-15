@@ -167,5 +167,9 @@
   </div>
 </template>
 <script>
-export default { name: 'manage' }
+export default {
+  name: 'manage',
+  methods: {},
+  computed: {}
+}
 </script>

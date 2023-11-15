@@ -59,6 +59,7 @@ export default {
     ...mapState(useModelStore, ['isOpen']),
     ...mapWritableState(useUserStore, ['userLogIn'])
   },
+  methods: {},
   created() {
     if (auth.currentUser) {
       this.userLogIn = true

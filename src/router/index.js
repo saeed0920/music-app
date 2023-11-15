@@ -4,6 +4,8 @@ import error from '@/views/404.vue'
 import about from '@/views/about.vue'
 import manage from '@/views/manage.vue'
 
+import useUserStore from '@/stores/user.js'
+
 const routes = [
   {
     name: 'home',
@@ -43,7 +45,12 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  console.log('guard')
+  const store = useUserStore()
+  if (store.userLogIn) {
+    console.log()
+  } else {
+    // next({ name: 'home' })
+  }
   next()
 })
 
