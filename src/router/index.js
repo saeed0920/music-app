@@ -3,38 +3,39 @@ import home from '@/views/home.vue'
 import error from '@/views/404.vue'
 import about from '@/views/about.vue'
 import manage from '@/views/manage.vue'
-
+import ROUTES_NAME from './routesName'
+import { guard } from './guard.js'
 import useUserStore from '@/stores/user.js'
 
 const routes = [
   {
-    name: 'home',
+    name: ROUTES_NAME.HOME,
     alias: '/home',
     path: '/',
     component: home
   },
   {
-    name: 'error',
+    name: ROUTES_NAME.ERROR,
     path: '/404',
     component: error
   },
   {
-    name: 'about',
+    name: ROUTES_NAME.ABOUT,
     path: '/about',
     component: about
   },
   {
-    name: 'manage',
+    name: ROUTES_NAME.MANAGE,
     path: '/manage-music',
     component: manage
   },
   {
     path: '/manage',
-    redirect: { name: 'manage' }
+    redirect: { name: ROUTES_NAME.MANAGE }
   },
   {
     path: '/:catchAll(.*)*',
-    redirect: { name: 'error' }
+    redirect: { name: ROUTES_NAME.ERROR }
   }
 ]
 
@@ -44,14 +45,5 @@ const router = createRouter({
   linkExactActiveClass: '!text-rose-500'
 })
 
-router.beforeEach((to, from, next) => {
-  const store = useUserStore()
-  if (store.userLogIn) {
-    console.log()
-  } else {
-    // next({ name: 'home' })
-  }
-  next()
-})
-
 export default router
+guard()
