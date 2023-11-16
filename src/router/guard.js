@@ -10,7 +10,13 @@ export function guard() {
       next({ name: ROUTES_NAME.HOME })
     }
 
-    if (to.name === ROUTES_NAME.MANAGE) {
+    //  Old Solution!
+    // if (to.name === ROUTES_NAME.MANAGE) {
+    //   next({ name: ROUTES_NAME.HOME })
+    // }
+
+    // new Solution for Check userLogin
+    if (to.meta.requiresAuth && !store.userLogIn) {
       next({ name: ROUTES_NAME.HOME })
     }
 

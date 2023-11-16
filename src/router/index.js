@@ -27,7 +27,8 @@ const routes = [
   {
     name: ROUTES_NAME.MANAGE,
     path: '/manage-music',
-    component: manage
+    component: manage,
+    meta: { requiresAuth: true }
   },
   {
     path: '/manage',
