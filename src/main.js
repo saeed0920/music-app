@@ -9,7 +9,6 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import customPlugin from './includes/validation'
-
 import { auth } from './includes/firebase'
 
 let app

@@ -1,3 +1,5 @@
+const { warn } = require('vue')
+
 /* eslint-env node */
 require('@rushstack/eslint-patch/modern-module-resolution')
 
@@ -20,5 +22,8 @@ module.exports = {
   env: {
     node: true
   },
-  'no-unused-vars': false
+  rules: {
+    'vue/multi-word-component-names': 0,
+    'no-unused-vars': 'warn'
+  }
 }
