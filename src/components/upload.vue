@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 import { storage } from '@/includes/firebase'
+
 // Data
 const isDragOver = ref(false)
-
 // Methods
 const upload = ($event) => {
   isDragOver.value = false
@@ -15,6 +15,9 @@ const upload = ($event) => {
     songsRef.put(file)
   })
 }
+toast('Wow so easy !', {
+  autoClose: 1000
+}) // ToastOptions
 </script>
 <template>
   <div class="col-span-1">

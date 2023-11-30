@@ -1,3 +1,13 @@
+<script>
+import upload from '@/components/upload.vue'
+export default {
+  name: 'manage',
+  components: { upload },
+  methods: {},
+  computed: {}
+}
+</script>
+
 <template>
   <!-- Main Content -->
   <section class="container mx-auto mt-6">
@@ -129,12 +139,3 @@
     </div>
   </div>
 </template>
-<script>
-import upload from '@/components/upload.vue'
-export default {
-  name: 'manage',
-  components: { upload },
-  methods: {},
-  computed: {}
-}
-</script>
