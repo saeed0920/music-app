@@ -1,23 +1,76 @@
 <script setup>
 import { ref } from 'vue'
 import { storage } from '@/includes/firebase'
+import { toast } from 'vue3-toastify'
 
 // Data
 const isDragOver = ref(false)
+const uploads = ref([])
 // Methods
 const upload = ($event) => {
   isDragOver.value = false
   const files = [...$event.dataTransfer.files]
   files.forEach((file) => {
-    if (file.type !== 'audio/mpeg') return
+    if (file.type !== 'audio/mpeg') {
+      toast.error('There Is something wrong!', {
+        autoClose: 5000,
+        closeButton: true
+      })
+      return
+    }
     const storageRef = storage.ref()
     const songsRef = storageRef.child(`songs/${file.name}`)
-    songsRef.put(file)
+    const task = songsRef.put(file)
+    const progress = ref()
+    const progressClass = ref('bg-blue-500')
+    const icon = ref('fas fa-spinner fa-spin')
+    const textClass = ref('')
+
+    // Upload Object
+    uploads.value.push({
+      task,
+      progress,
+      name: file.name,
+      class: progressClass,
+      icon,
+      text: textClass
+    })
+
+    task.on(
+      'state_changed',
+      (snapshot) => {
+        // Observe state change events such as progress, pause, and resume
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        progress.value = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused')
+            break
+          case 'running':
+            console.log('Upload is running')
+            break
+        }
+      },
+      (error) => {
+        // Handle unsuccessful uploads
+        progressClass.value = 'bg-red-500'
+        icon.value = 'fas fa-times'
+        textClass.value = 'text-red-500'
+        console.log(error)
+      },
+      () => {
+        // TODO: read document from firebase for getDownloadURL() function
+        // Handle successful uploads on complete
+        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+        // getDownloadURL(task.snapshot.ref).then((downloadURL) => {
+        // })
+        progressClass.value = 'bg-green-500'
+        icon.value = 'fas fa-check'
+        textClass.value = 'text-green-500'
+      }
+    )
   })
 }
-toast('Wow so easy !', {
-  autoClose: 1000
-}) // ToastOptions
 </script>
 <template>
   <div class="col-span-1">
@@ -42,24 +95,19 @@ toast('Wow so easy !', {
         </div>
         <hr class="my-6" />
         <!-- Progress Bars -->
-        <div class="mb-4">
+        <div class="mb-4" v-for="(item, index) of uploads" :key="index">
           <!-- File Name -->
-          <div class="font-bold text-sm">Just another song.mp3</div>
+          <div class="font-bold text-sm" :class="item.text">
+            <i :class="item.icon" />
+            {{ item.name }}
+          </div>
           <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
             <!-- Inner Progress Bar -->
-            <div class="transition-all progress-bar bg-blue-400" style="width: 75%"></div>
-          </div>
-        </div>
-        <div class="mb-4">
-          <div class="font-bold text-sm">Just another song.mp3</div>
-          <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
-            <div class="transition-all progress-bar bg-blue-400" style="width: 35%"></div>
-          </div>
-        </div>
-        <div class="mb-4">
-          <div class="font-bold text-sm">Just another song.mp3</div>
-          <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
-            <div class="transition-all progress-bar bg-blue-400" style="width: 55%"></div>
+            <div
+              class="transition-all progress-bar"
+              :class="item.class"
+              :style="{ width: item.progress + '%' }"
+            ></div>
           </div>
         </div>
       </div>

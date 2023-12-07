@@ -18,4 +18,5 @@ const auth = firebase.auth()
 const dataBase = firebase.firestore()
 const userCol = dataBase.collection('usersInfo')
 const storage = firebase.storage()
+
 export { auth, dataBase, userCol, storage }
