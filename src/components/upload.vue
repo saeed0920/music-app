@@ -1,7 +1,8 @@
 <script setup>
 import { ref } from 'vue'
-import { storage } from '@/includes/firebase'
+import { storage, auth, songsCol } from '@/includes/firebase'
 import { toast } from 'vue3-toastify'
+import { onBeforeUnmount } from 'vue'
 
 // Data
 const isDragOver = ref(false)
@@ -9,7 +10,7 @@ const uploads = ref([])
 // Methods
 const upload = ($event) => {
   isDragOver.value = false
-  const files = [...$event.dataTransfer.files]
+  const files = $event.dataTransfer ? [...$event.dataTransfer.files] : [$event.target.files]
   files.forEach((file) => {
     if (file.type !== 'audio/mpeg') {
       toast.error('There Is something wrong!', {
@@ -25,6 +26,7 @@ const upload = ($event) => {
     const progressClass = ref('bg-blue-500')
     const icon = ref('fas fa-spinner fa-spin')
     const textClass = ref('')
+    const cancelIcon = ref(true)
 
     // Upload Object
     uploads.value.push({
@@ -33,7 +35,8 @@ const upload = ($event) => {
       name: file.name,
       class: progressClass,
       icon,
-      text: textClass
+      text: textClass,
+      cancelIcon
     })
 
     task.on(
@@ -44,10 +47,10 @@ const upload = ($event) => {
         progress.value = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
         switch (snapshot.state) {
           case 'paused':
-            console.log('Upload is paused')
+            // console.log('Upload is paused')
             break
           case 'running':
-            console.log('Upload is running')
+            // console.log('Upload is running')
             break
         }
       },
@@ -56,21 +59,49 @@ const upload = ($event) => {
         progressClass.value = 'bg-red-500'
         icon.value = 'fas fa-times'
         textClass.value = 'text-red-500'
+        cancelIcon.value = false
         console.log(error)
       },
-      () => {
+      async () => {
+        const song = {
+          uuid: auth.currentUser.uid,
+          displayName: auth.currentUser.displayName,
+          originalName: task.snapshot.ref.name,
+          modifiedName: task.snapshot.ref.name,
+          genre: '',
+          comment_count: 0
+        }
+        song.url = await task.snapshot.ref.getDownloadURL()
+        await songsCol.add(song)
+
         // TODO: read document from firebase for getDownloadURL() function
         // Handle successful uploads on complete
         // For instance, get the download URL: https://firebasestorage.googleapis.com/...
         // getDownloadURL(task.snapshot.ref).then((downloadURL) => {
         // })
+        toast.success('File successfully uploaded!', {
+          autoClose: 2500,
+          closeButton: true
+        })
         progressClass.value = 'bg-green-500'
         icon.value = 'fas fa-check'
         textClass.value = 'text-green-500'
+        cancelIcon.value = false
       }
     )
   })
 }
+
+const cancelUpload = (item) => {
+  const uploadItem = uploads.value.find((upload) => upload == item)
+  uploadItem.task.cancel()
+}
+
+onBeforeUnmount(() => {
+  uploads.value.forEach((upload) => {
+    upload.task.cancel()
+  })
+})
 </script>
 <template>
   <div class="col-span-1">
@@ -93,26 +124,31 @@ const upload = ($event) => {
         >
           <h5>Drop your files here</h5>
         </div>
+        <input type="file" multiple @change="upload($event)" />
         <hr class="my-6" />
         <!-- Progress Bars -->
-        <div class="mb-4" v-for="(item, index) of uploads" :key="index">
+        <div v-for="(item, index) of uploads" class="mb-4" :key="index">
           <!-- File Name -->
           <div class="font-bold text-sm" :class="item.text">
             <i :class="item.icon" />
             {{ item.name }}
           </div>
-          <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
+          <div class="flex h-5 overflow-hidden rounded">
             <!-- Inner Progress Bar -->
             <div
               class="transition-all progress-bar"
               :class="item.class"
               :style="{ width: item.progress + '%' }"
             ></div>
+            <span
+              :style="item.cancelIcon ? 'display:grid;' : 'display:none;'"
+              @click="cancelUpload(item)"
+              class="ml-auto text-lg cursor-pointer grid place-items-center rounded-full"
+              >X</span
+            >
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped></style>
