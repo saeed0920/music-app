@@ -1,18 +1,20 @@
-<script>
+<script setup>
+import { ref } from 'vue'
+import { onBeforeRouteLeave } from "vue-router";
 import upload from '@/components/upload.vue'
-export default {
-  name: 'manage',
-  components: { upload },
-  methods: {},
-  computed: {}
-}
+
+const uploadComponent = ref(null);
+onBeforeRouteLeave((to, from, next) =>  {
+    uploadComponent.value.cancelAllUploads();
+    next();
+})
 </script>
 
 <template>
   <!-- Main Content -->
   <section class="container mx-auto mt-6">
     <div class="md:grid md:grid-cols-3 md:gap-4">
-      <upload />
+      <upload ref="uploadComponent" />
       <div class="col-span-2">
         <div class="bg-white rounded border border-gray-200 relative flex flex-col">
           <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">

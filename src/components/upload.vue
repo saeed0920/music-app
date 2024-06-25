@@ -97,11 +97,16 @@ const cancelUpload = (item) => {
   uploadItem.task.cancel()
 }
 
-onBeforeUnmount(() => {
+const cancelAllUploads = () => { 
   uploads.value.forEach((upload) => {
     upload.task.cancel()
   })
+}
+
+defineExpose({
+  cancelAllUploads
 })
+
 </script>
 <template>
   <div class="col-span-1">
