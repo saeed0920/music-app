@@ -2,14 +2,29 @@
 import { ref } from 'vue'
 import { onBeforeRouteLeave } from "vue-router";
 import upload from '@/components/upload.vue'
+import { songsCol,  auth } from '@/includes/firebase.js';
+import compostionItem from '@/components/CompositionItem.vue';
 
+const songs = ref([]);
 const uploadComponent = ref(null);
 onBeforeRouteLeave((to, from, next) =>  {
     uploadComponent.value.cancelAllUploads();
     next();
 })
-</script>
 
+ onMounted(async () => { 
+  const snapShot = await songsCollection.where('uid' , '==' , auth.currentUser.uid).get(); 
+  snapShot.forEach((document) => {
+  const song = {
+  ...document.data(),
+  docID : document.id,
+    };
+  })
+  songs.value.push(song);
+  console.log(songs.value);
+})
+
+</script>
 <template>
   <!-- Main Content -->
   <section class="container mx-auto mt-6">
@@ -23,87 +38,7 @@ onBeforeRouteLeave((to, from, next) =>  {
           </div>
           <div class="p-6">
             <!-- Composition Items -->
-            <div class="border border-gray-200 p-3 mb-4 rounded">
-              <div>
-                <h4 class="inline-block text-2xl font-bold">Song Name</h4>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right">
-                  <i class="fa fa-times"></i>
-                </button>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 float-right">
-                  <i class="fa fa-pencil-alt"></i>
-                </button>
-              </div>
-              <div>
-                <form>
-                  <div class="mb-3">
-                    <label class="inline-block mb-2">Song Title</label>
-                    <input
-                      type="text"
-                      class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                      placeholder="Enter Song Title"
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label class="inline-block mb-2">Genre</label>
-                    <input
-                      type="text"
-                      class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                      placeholder="Enter Genre"
-                    />
-                  </div>
-                  <button type="submit" class="py-1.5 px-3 rounded text-white bg-green-600">
-                    Submit
-                  </button>
-                  <button type="button" class="py-1.5 px-3 rounded text-white bg-gray-600">
-                    Go Back
-                  </button>
-                </form>
-              </div>
-            </div>
-            <div class="border border-gray-200 p-3 mb-4 rounded">
-              <div>
-                <h4 class="inline-block text-2xl font-bold">Song Name</h4>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right">
-                  <i class="fa fa-times"></i>
-                </button>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 float-right">
-                  <i class="fa fa-pencil-alt"></i>
-                </button>
-              </div>
-            </div>
-            <div class="border border-gray-200 p-3 mb-4 rounded">
-              <div>
-                <h4 class="inline-block text-2xl font-bold">Song Name</h4>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right">
-                  <i class="fa fa-times"></i>
-                </button>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 float-right">
-                  <i class="fa fa-pencil-alt"></i>
-                </button>
-              </div>
-            </div>
-            <div class="border border-gray-200 p-3 mb-4 rounded">
-              <div>
-                <h4 class="inline-block text-2xl font-bold">Song Name</h4>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right">
-                  <i class="fa fa-times"></i>
-                </button>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 float-right">
-                  <i class="fa fa-pencil-alt"></i>
-                </button>
-              </div>
-            </div>
-            <div class="border border-gray-200 p-3 mb-4 rounded">
-              <div>
-                <h4 class="inline-block text-2xl font-bold">Song Name</h4>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right">
-                  <i class="fa fa-times"></i>
-                </button>
-                <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 float-right">
-                  <i class="fa fa-pencil-alt"></i>
-                </button>
-              </div>
-            </div>
+            <compostionItem v-for="(song,index) of songs" :key="index" />
           </div>
         </div>
       </div>
@@ -112,7 +47,7 @@ onBeforeRouteLeave((to, from, next) =>  {
 
   <!-- Player -->
   <div class="fixed bottom-0 left-0 b bg-white px-4 py-2 w-full">
-    <!-- Track Info -->
+    <!-- Track Info --
     <div class="text-center">
       <span class="song-title font-bold">Song Title</span> by
       <span class="song-artist">Artist</span>
